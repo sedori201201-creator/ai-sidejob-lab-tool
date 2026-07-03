@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI副業ラボ 投稿メーカー</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">AI副業ラボ</p>
+            <h1>投稿メーカー</h1>
+          </div>
+          <div class="top-actions">
+            <button id="sampleBtn" class="ghost-btn" type="button">サンプル</button>
+            <button id="resetBtn" class="icon-btn" type="button" aria-label="リセット">↺</button>
+          </div>
+        </header>
+
+        <section id="affiliateCard" class="affiliate-card" hidden>
+          <div>
+            <p id="affiliateLabel" class="affiliate-label">PR</p>
+            <h2 id="affiliateTitle">おすすめツール</h2>
+            <p id="affiliateDescription">AI副業の作業を効率化したい方向けのリンクです。</p>
+          </div>
+          <a id="affiliateLink" class="affiliate-link" href="#" target="_blank" rel="sponsored noopener">詳しく見る</a>
+        </section>
+
+        <section class="tool-grid">
+          <form id="postForm" class="panel input-panel">
+            <div class="field">
+              <label for="theme">記事テーマ</label>
+              <textarea id="theme" rows="3" placeholder="例: アプリと課金システムで月5万円を作る方法"></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="audience">読者</label>
+                <input id="audience" type="text" value="AI副業をこれから始めたい初心者">
+              </div>
+              <div class="field">
+                <label for="goal">読者のゴール</label>
+                <input id="goal" type="text" value="月5万円の収入導線を作る">
+              </div>
+            </div>
+
+            <div class="field-row compact">
+              <div class="field">
+                <label for="tone">文体</label>
+                <select id="tone">
+                  <option value="friendly">やさしく実践的</option>
+                  <option value="sharp">短く力強く</option>
+                  <option value="premium">有料note向けに濃く</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="price">価格</label>
+                <input id="price" type="number" min="100" step="100" value="500">
+              </div>
+            </div>
+
+            <fieldset class="segmented" aria-label="販売形式">
+              <label>
+                <input type="radio" name="paidMode" value="paid" checked>
+                <span>有料note</span>
+              </label>
+              <label>
+                <input type="radio" name="paidMode" value="free">
+                <span>無料note</span>
+              </label>
+            </fieldset>
+
+            <div class="field">
+              <label for="thumbnailStyle">サムネの雰囲気</label>
+              <input id="thumbnailStyle" type="text" value="黄色背景に黒文字、シンプル、正円にも使える">
+            </div>
+
+            <section class="affiliate-settings">
+              <div class="section-title">
+                <h2>ツール内アフィリエイト枠</h2>
+                <label class="toggle">
+                  <input id="affiliateEnabled" type="checkbox">
+                  <span>表示</span>
+                </label>
+              </div>
+              <div class="field">
+                <label for="affiliateUrl">リンクURL</label>
+                <input id="affiliateUrl" type="url" placeholder="https://example.com/affiliate">
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="affiliateTitleInput">表示タイトル</label>
+                  <input id="affiliateTitleInput" type="text" value="おすすめAIツール">
+                </div>
+                <div class="field">
+                  <label for="affiliateButtonText">ボタン文言</label>
+                  <input id="affiliateButtonText" type="text" value="詳しく見る">
+                </div>
+              </div>
+              <div class="field">
+                <label for="affiliateDescriptionInput">説明文</label>
+                <input id="affiliateDescriptionInput" type="text" value="AI副業の記事作成や作業効率化に役立つツールです。">
+              </div>
+            </section>
+
+            <button class="primary-btn" type="submit">投稿セットを作る</button>
+          </form>
+
+          <section class="panel output-panel">
+            <div class="tabs" role="tablist" aria-label="出力">
+              <button class="tab is-active" type="button" data-target="articleOutput">本文</button>
+              <button class="tab" type="button" data-target="thumbOutput">サムネ</button>
+              <button class="tab" type="button" data-target="checkOutput">投稿</button>
+            </div>
+
+            <div id="articleOutput" class="output-view is-active">
+              <div class="output-header">
+                <h2 id="generatedTitle">タイトルがここに入ります</h2>
+                <button class="copy-btn" type="button" data-copy="articleText">コピー</button>
+              </div>
+              <textarea id="articleText" readonly></textarea>
+            </div>
+
+            <div id="thumbOutput" class="output-view">
+              <div class="output-header">
+                <h2>サムネ生成プロンプト</h2>
+                <button class="copy-btn" type="button" data-copy="thumbnailPrompt">コピー</button>
+              </div>
+              <textarea id="thumbnailPrompt" readonly></textarea>
+            </div>
+
+            <div id="checkOutput" class="output-view">
+              <div class="output-header">
+                <h2>投稿チェックリスト</h2>
+                <button class="copy-btn" type="button" data-copy="checklistText">コピー</button>
+              </div>
+              <textarea id="checklistText" readonly></textarea>
+            </div>
+
+            <div class="export-row">
+              <button id="downloadMdBtn" class="ghost-btn" type="button">Markdown保存</button>
+              <button id="copyAllBtn" class="ghost-btn" type="button">全部コピー</button>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
