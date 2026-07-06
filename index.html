@@ -3,148 +3,157 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AI副業ラボ 投稿メーカー</title>
+    <title>AI副業ラボ note投稿ツール</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <main class="app-shell">
-      <section class="workspace">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">AI副業ラボ</p>
-            <h1>投稿メーカー</h1>
-          </div>
-          <div class="top-actions">
-            <button id="sampleBtn" class="ghost-btn" type="button">サンプル</button>
-            <button id="resetBtn" class="icon-btn" type="button" aria-label="リセット">↺</button>
-          </div>
-        </header>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AI副業ラボ</p>
+          <h1>note投稿ツール</h1>
+        </div>
+        <div class="top-actions">
+          <button id="sampleBtn" class="ghost-btn" type="button">サンプル</button>
+          <button id="resetBtn" class="ghost-btn" type="button">リセット</button>
+        </div>
+      </header>
 
-        <section id="affiliateCard" class="affiliate-card" hidden>
-          <div>
-            <p id="affiliateLabel" class="affiliate-label">PR</p>
-            <h2 id="affiliateTitle">おすすめツール</h2>
-            <p id="affiliateDescription">AI副業の作業を効率化したい方向けのリンクです。</p>
+      <section class="tool-grid">
+        <form id="postForm" class="panel input-panel">
+          <div class="field">
+            <label for="theme">記事タイトル</label>
+            <input id="theme" type="text" value="AIを使って副業時間を半分にする方法">
           </div>
-          <a id="affiliateLink" class="affiliate-link" href="#" target="_blank" rel="sponsored noopener">詳しく見る</a>
-        </section>
 
-        <section class="tool-grid">
-          <form id="postForm" class="panel input-panel">
+          <div class="field-row">
             <div class="field">
-              <label for="theme">記事テーマ</label>
-              <textarea id="theme" rows="3" placeholder="例: アプリと課金システムで月5万円を作る方法"></textarea>
+              <label for="audience">読者</label>
+              <input id="audience" type="text" value="副業を始めたいが時間が足りない人">
             </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="audience">読者</label>
-                <input id="audience" type="text" value="AI副業をこれから始めたい初心者">
-              </div>
-              <div class="field">
-                <label for="goal">読者のゴール</label>
-                <input id="goal" type="text" value="月5万円の収入導線を作る">
-              </div>
-            </div>
-
-            <div class="field-row compact">
-              <div class="field">
-                <label for="tone">文体</label>
-                <select id="tone">
-                  <option value="friendly">やさしく実践的</option>
-                  <option value="sharp">短く力強く</option>
-                  <option value="premium">有料note向けに濃く</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="price">価格</label>
-                <input id="price" type="number" min="100" step="100" value="500">
-              </div>
-            </div>
-
-            <fieldset class="segmented" aria-label="販売形式">
-              <label>
-                <input type="radio" name="paidMode" value="paid" checked>
-                <span>有料note</span>
-              </label>
-              <label>
-                <input type="radio" name="paidMode" value="free">
-                <span>無料note</span>
-              </label>
-            </fieldset>
-
             <div class="field">
-              <label for="thumbnailStyle">サムネの雰囲気</label>
-              <input id="thumbnailStyle" type="text" value="黄色背景に黒文字、シンプル、正円にも使える">
+              <label for="goal">読後の行動</label>
+              <input id="goal" type="text" value="AIを使った投稿作業の型を作る">
             </div>
+          </div>
 
-            <section class="affiliate-settings">
-              <div class="section-title">
-                <h2>ツール内アフィリエイト枠</h2>
-                <label class="toggle">
-                  <input id="affiliateEnabled" type="checkbox">
-                  <span>表示</span>
-                </label>
-              </div>
-              <div class="field">
-                <label for="affiliateUrl">リンクURL</label>
-                <input id="affiliateUrl" type="url" placeholder="https://example.com/affiliate">
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="affiliateTitleInput">表示タイトル</label>
-                  <input id="affiliateTitleInput" type="text" value="おすすめAIツール">
-                </div>
-                <div class="field">
-                  <label for="affiliateButtonText">ボタン文言</label>
-                  <input id="affiliateButtonText" type="text" value="詳しく見る">
-                </div>
-              </div>
-              <div class="field">
-                <label for="affiliateDescriptionInput">説明文</label>
-                <input id="affiliateDescriptionInput" type="text" value="AI副業の記事作成や作業効率化に役立つツールです。">
-              </div>
-            </section>
-
-            <button class="primary-btn" type="submit">投稿セットを作る</button>
-          </form>
-
-          <section class="panel output-panel">
-            <div class="tabs" role="tablist" aria-label="出力">
-              <button class="tab is-active" type="button" data-target="articleOutput">本文</button>
-              <button class="tab" type="button" data-target="thumbOutput">サムネ</button>
-              <button class="tab" type="button" data-target="checkOutput">投稿</button>
+          <div class="field-row compact">
+            <div class="field">
+              <label for="tone">文体</label>
+              <select id="tone">
+                <option value="practical">実用的</option>
+                <option value="friendly">やさしい</option>
+                <option value="premium">有料note向け</option>
+              </select>
             </div>
-
-            <div id="articleOutput" class="output-view is-active">
-              <div class="output-header">
-                <h2 id="generatedTitle">タイトルがここに入ります</h2>
-                <button class="copy-btn" type="button" data-copy="articleText">コピー</button>
-              </div>
-              <textarea id="articleText" readonly></textarea>
+            <div class="field">
+              <label for="length">文字数目安</label>
+              <select id="length">
+                <option value="1000">1000字</option>
+                <option value="1500">1500字</option>
+                <option value="700">短め</option>
+              </select>
             </div>
+          </div>
 
-            <div id="thumbOutput" class="output-view">
-              <div class="output-header">
-                <h2>サムネ生成プロンプト</h2>
-                <button class="copy-btn" type="button" data-copy="thumbnailPrompt">コピー</button>
-              </div>
-              <textarea id="thumbnailPrompt" readonly></textarea>
+          <fieldset class="segmented" aria-label="記事タイプ">
+            <label>
+              <input type="radio" name="paidMode" value="free" checked>
+              <span>無料</span>
+            </label>
+            <label>
+              <input type="radio" name="paidMode" value="paid">
+              <span>有料</span>
+            </label>
+          </fieldset>
+
+          <div class="field-row compact">
+            <div class="field">
+              <label for="tags">ハッシュタグ</label>
+              <input id="tags" type="text" value="副業,AI,時短">
             </div>
-
-            <div id="checkOutput" class="output-view">
-              <div class="output-header">
-                <h2>投稿チェックリスト</h2>
-                <button class="copy-btn" type="button" data-copy="checklistText">コピー</button>
-              </div>
-              <textarea id="checklistText" readonly></textarea>
+            <div class="field">
+              <label for="price">有料価格</label>
+              <input id="price" type="number" min="100" step="100" value="500">
             </div>
+          </div>
 
-            <div class="export-row">
-              <button id="downloadMdBtn" class="ghost-btn" type="button">Markdown保存</button>
-              <button id="copyAllBtn" class="ghost-btn" type="button">全部コピー</button>
+          <section class="panel-mini">
+            <h2>ツール誘導</h2>
+            <label class="toggle">
+              <input id="toolCtaEnabled" type="checkbox" checked>
+              <span>本文末にWebツールへの案内を入れる</span>
+            </label>
+            <div class="field">
+              <label for="toolUrl">WebツールURL</label>
+              <input id="toolUrl" type="url" placeholder="https://sedori201201-creator.github.io/ai-sidejob-lab-tool/">
             </div>
           </section>
+
+          <section class="panel-mini">
+            <h2>アフィリエイト表示</h2>
+            <label class="toggle">
+              <input id="affiliateEnabled" type="checkbox">
+              <span>ツール内PRリンクを表示する</span>
+            </label>
+            <div class="field">
+              <label for="affiliateUrl">PRリンクURL</label>
+              <input id="affiliateUrl" type="url" placeholder="https://example.com/affiliate">
+            </div>
+            <div class="field">
+              <label for="affiliateTitle">PRタイトル</label>
+              <input id="affiliateTitle" type="text" value="おすすめAIツール">
+            </div>
+          </section>
+
+          <button class="primary-btn" type="submit">投稿パックを作る</button>
+          <a class="note-link" href="https://note.com/notes/new" target="_blank" rel="noopener">note新規投稿を開く</a>
+        </form>
+
+        <section class="panel output-panel">
+          <div class="tabs" role="tablist" aria-label="出力">
+            <button class="tab is-active" type="button" data-target="articlePane">本文</button>
+            <button class="tab" type="button" data-target="thumbPane">サムネ</button>
+            <button class="tab" type="button" data-target="publishPane">投稿手順</button>
+          </div>
+
+          <div id="articlePane" class="output-view is-active">
+            <div class="output-header">
+              <h2 id="generatedTitle">AIを使って副業時間を半分にする方法</h2>
+              <button class="copy-btn" type="button" data-copy="articleText">コピー</button>
+            </div>
+            <textarea id="articleText" readonly></textarea>
+          </div>
+
+          <div id="thumbPane" class="output-view">
+            <div class="thumb-layout">
+              <canvas id="thumbnailCanvas" width="1280" height="670"></canvas>
+              <div class="thumb-actions">
+                <button id="downloadThumbBtn" class="primary-btn" type="button">サムネPNG保存</button>
+                <button class="copy-btn" type="button" data-copy="thumbnailPrompt">プロンプトコピー</button>
+              </div>
+            </div>
+            <textarea id="thumbnailPrompt" readonly></textarea>
+          </div>
+
+          <div id="publishPane" class="output-view">
+            <div class="output-header">
+              <h2>note公開チェック</h2>
+              <button class="copy-btn" type="button" data-copy="publishText">コピー</button>
+            </div>
+            <textarea id="publishText" readonly></textarea>
+          </div>
+
+          <div id="affiliateCard" class="affiliate-card" hidden>
+            <span>PR</span>
+            <strong id="affiliateCardTitle">おすすめAIツール</strong>
+            <a id="affiliateCardLink" href="#" target="_blank" rel="sponsored noopener">詳細を見る</a>
+          </div>
+
+          <div class="export-row">
+            <button id="copyAllBtn" class="ghost-btn" type="button">全部コピー</button>
+            <button id="downloadMdBtn" class="ghost-btn" type="button">Markdown保存</button>
+          </div>
         </section>
       </section>
     </main>

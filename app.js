@@ -3,211 +3,195 @@ const themeEl = document.querySelector("#theme");
 const audienceEl = document.querySelector("#audience");
 const goalEl = document.querySelector("#goal");
 const toneEl = document.querySelector("#tone");
+const lengthEl = document.querySelector("#length");
+const tagsEl = document.querySelector("#tags");
 const priceEl = document.querySelector("#price");
-const styleEl = document.querySelector("#thumbnailStyle");
+const toolCtaEnabledEl = document.querySelector("#toolCtaEnabled");
+const toolUrlEl = document.querySelector("#toolUrl");
+const affiliateEnabledEl = document.querySelector("#affiliateEnabled");
+const affiliateUrlEl = document.querySelector("#affiliateUrl");
+const affiliateTitleEl = document.querySelector("#affiliateTitle");
 const generatedTitleEl = document.querySelector("#generatedTitle");
 const articleTextEl = document.querySelector("#articleText");
 const thumbnailPromptEl = document.querySelector("#thumbnailPrompt");
-const checklistTextEl = document.querySelector("#checklistText");
-const affiliateEnabledEl = document.querySelector("#affiliateEnabled");
-const affiliateUrlEl = document.querySelector("#affiliateUrl");
-const affiliateTitleInputEl = document.querySelector("#affiliateTitleInput");
-const affiliateDescriptionInputEl = document.querySelector("#affiliateDescriptionInput");
-const affiliateButtonTextEl = document.querySelector("#affiliateButtonText");
+const publishTextEl = document.querySelector("#publishText");
+const canvas = document.querySelector("#thumbnailCanvas");
 const affiliateCardEl = document.querySelector("#affiliateCard");
-const affiliateTitleEl = document.querySelector("#affiliateTitle");
-const affiliateDescriptionEl = document.querySelector("#affiliateDescription");
-const affiliateLinkEl = document.querySelector("#affiliateLink");
+const affiliateCardTitleEl = document.querySelector("#affiliateCardTitle");
+const affiliateCardLinkEl = document.querySelector("#affiliateCardLink");
 
 const sample = {
-  theme: "アプリと課金システムで月5万円を作る方法",
-  audience: "AI副業をこれから始めたい初心者",
-  goal: "小さなWebツールを作って月5万円を目指す",
-  style: "黄色背景に黒文字、シンプル、正円にも使える",
+  title: "AIを使って副業時間を半分にする方法",
+  audience: "副業を始めたいが時間が足りない人",
+  goal: "AIを使った投稿作業の型を作る",
+  tags: "副業,AI,時短",
 };
 
 function paidMode() {
   return document.querySelector("input[name='paidMode']:checked").value;
 }
 
-function normalizeTheme(value) {
-  return value.trim() || sample.theme;
+function cleanTitle(value) {
+  return (value || sample.title).trim().replace(/^#+\s*/, "");
 }
 
-function makeTitle(theme) {
-  const clean = theme.replace(/[。.!！?？]$/g, "").trim();
-  if (clean.length <= 32) return clean;
-  return `${clean.slice(0, 30)}...`;
+function tagList() {
+  return tagsEl.value
+    .split(",")
+    .map((tag) => tag.trim().replace(/^#/, ""))
+    .filter(Boolean);
 }
 
-function makeArticle({ theme, audience, goal, tone, price, paid }) {
-  const title = makeTitle(theme);
-  const practicalLine =
-    tone === "sharp"
-      ? "大事なのは、考えるだけで止めず、小さく売って数字を見ることです。"
-      : tone === "premium"
-        ? "大切なのは、読者が今日から動けるほど具体的な手順まで落とし込むことです。"
-        : "大切なのは、難しいことから始めず、小さく試せる形にすることです。";
-
-  const paidLead =
-    paid === "paid"
-      ? `ここから先は、${price}円の有料部分として、実際に使えるテンプレートと行動手順をまとめます。`
-      : "ここから先は、実際に使えるテンプレートと行動手順をまとめます。";
-
-  return `# ${title}
-
-${theme}を考えるとき、いきなり大きなサービスや完璧なアプリを作る必要はありません。
-
-まず見るべきなのは、「誰のどんな面倒を減らせるか」です。対象読者は、${audience}。目指すゴールは、${goal}です。
-
-最初に作るべきものは、スマホアプリではなく、小さなWebツールです。ブラウザで開けて、入力したらすぐ結果が出る。これくらい軽い形の方が、改善も販売も早く進みます。
-
-たとえば、記事テーマを入れるだけで、note本文、有料部分、サムネ案、投稿チェックリストまで出してくれるツール。これは「AI副業ラボ」と相性がいいです。
-
-${practicalLine}
-
-最初の流れはシンプルです。
-
-1. テーマを入力する
-2. AIが記事本文を作る
-3. サムネ案を作る
-4. 投稿用チェックリストを出す
-5. noteに貼り付けて公開する
-
-この仕組みができると、毎回ゼロから考える必要がなくなります。記事作成が作業ではなく、型になります。
-
-月5万円を目指すなら、価格設計もシンプルです。500円の商品なら100人、1,000円の商品なら50人、2,500円の商品なら20人です。最初から大きく売るより、まず10人に使ってもらい、感想を見ながら改善する方が現実的です。
-
-${paidLead}
-
-## 有料部分: 具体的な作り方
-
-### 1. 最初のWebツールに必要な入力欄
-
-- 記事テーマ
-- 読者
-- 読者のゴール
-- 有料か無料か
-- 価格
-- サムネの雰囲気
-- 文字数
-
-入力欄は多すぎない方がいいです。最初は「テーマ」「読者」「価格」だけでも十分です。
-
-### 2. 出力するもの
-
-- noteタイトル
-- 無料部分
-- 有料部分
-- サムネ生成プロンプト
-- 投稿チェックリスト
-
-この5つが出れば、note投稿までかなり短縮できます。
-
-### 3. 課金ポイント
-
-無料版では、月3記事まで作れるようにします。有料版では、記事数を増やし、サムネ案や有料部分テンプレを追加します。
-
-価格は最初から高くしなくて大丈夫です。
-
-- 無料: 月3記事まで
-- 月500円: 月20記事まで
-- 月980円: 無制限
-- 買い切り2,980円: テンプレ集付き
-
-### 4. 販売導線
-
-note記事で集客して、最後にこう案内します。
-
-「この記事と同じ型で、あなた用の記事セットを作れるツールを用意しました」
-
-この流れなら、発信と商品がつながります。
-
-### 5. 失敗しやすいポイント
-
-一番失敗しやすいのは、最初から多機能にすることです。ユーザーが欲しいのは、すごい機能ではなく、迷わず投稿できることです。
-
-最初は、記事を作る。サムネ案を作る。コピーできる。この3つで十分です。
-
-## まとめ
-
-${theme}で大切なのは、アプリを作ることそのものではありません。面倒な作業を減らし、投稿までの流れを短くすることです。
-
-小さなWebツールを作り、自分で使い、noteで発信し、反応があれば課金する。この順番なら、初心者でも現実的に月5万円を目指せます。`;
-}
-
-function makeThumbnailPrompt({ title, style }) {
-  return `Use case: ads-marketing
-Asset type: note.com article thumbnail, 16:9 landscape
-Primary request: Create a clean Japanese thumbnail for the article title "${title}".
-Style direction: ${style}
-Composition: large readable Japanese title centered-left, simple visual symbol of AI and web tool on the right, strong mobile readability.
-Color: yellow background, black text, minimal accent color.
-Text verbatim: "${title}"
-Constraints: no logos, no watermark, no extra small text, no clutter, note.com cover image feel.`;
-}
-
-function makeChecklist({ title, price, paid }) {
-  return `投稿前チェック
-
-- タイトル: ${title}
-- 販売形式: ${paid === "paid" ? "有料" : "無料"}
-- 価格: ${paid === "paid" ? `${price}円` : "なし"}
-- サムネを設定した
-- 無料部分と有料部分の境界を確認した
-- 本文の見出しが崩れていない
-- コピペ用テンプレートが読める
-- アフィリエイト枠を使う場合はPR表記とリンク先を確認した
-- 最後の投稿ボタンを押す前に全体を確認した`;
-}
-
-function getAffiliateData() {
-  return {
-    enabled: affiliateEnabledEl.checked,
-    url: affiliateUrlEl.value.trim(),
-    title: affiliateTitleInputEl.value.trim() || "おすすめAIツール",
-    description: affiliateDescriptionInputEl.value.trim() || "AI副業の作業効率化に役立つツールです。",
-    buttonText: affiliateButtonTextEl.value.trim() || "詳しく見る",
-  };
-}
-
-function updateAffiliateCard() {
-  const affiliate = getAffiliateData();
-  const shouldShow = affiliate.enabled && affiliate.url;
-  affiliateCardEl.hidden = !shouldShow;
-
-  if (!shouldShow) return;
-
-  affiliateTitleEl.textContent = affiliate.title;
-  affiliateDescriptionEl.textContent = affiliate.description;
-  affiliateLinkEl.href = affiliate.url;
-  affiliateLinkEl.textContent = affiliate.buttonText;
-}
-
-function generate() {
-  const theme = normalizeTheme(themeEl.value);
+function makeArticle() {
+  const title = cleanTitle(themeEl.value);
   const audience = audienceEl.value.trim() || sample.audience;
   const goal = goalEl.value.trim() || sample.goal;
   const tone = toneEl.value;
-  const price = Number(priceEl.value || 500);
   const paid = paidMode();
-  const style = styleEl.value.trim() || sample.style;
-  const title = makeTitle(theme);
-  const affiliate = getAffiliateData();
+  const price = Number(priceEl.value || 500);
+  const toolUrl = toolUrlEl.value.trim();
 
-  const article = makeArticle({ theme, audience, goal, tone, price, paid });
-  const prompt = makeThumbnailPrompt({ title, style });
-  const checklist = makeChecklist({ title, price, paid });
+  const opening =
+    tone === "friendly"
+      ? "副業が続かない理由は、能力が足りないからではありません。多くの場合、作業に時間がかかりすぎているだけです。"
+      : tone === "premium"
+        ? "副業で成果を出す人は、作業量を増やすより先に、作業の型を作っています。AIはその型作りに最も向いています。"
+        : "副業で一番削るべきなのは、判断ではなく繰り返し作業です。AIを使う価値は、ここにあります。";
 
+  const paidBlock =
+    paid === "paid"
+      ? `\n\nここから先は有料部分に入れる想定です。価格は${price}円から始め、購入者の反応が取れたら段階的に上げます。最初から高く売るより、まずは「読んだ人がすぐ使える型」を入れることが重要です。\n\n有料部分に入れる内容は、次の4つです。\n1. note本文を作るAIプロンプト\n2. サムネ文言を作るAIプロンプト\n3. Xで告知する短文テンプレ\n4. 投稿前チェックリスト\n\nこの4つがあると、読者は記事を読んで終わりではなく、自分の投稿作業にそのまま使えます。`
+      : "";
+
+  const cta =
+    toolCtaEnabledEl.checked && toolUrl
+      ? `\n\nこの記事と同じ流れで、本文・サムネ・投稿チェックを作れるWebツールも用意しています。\n${toolUrl}\nテーマを入れるだけで、note投稿の下書きまで作れる形にしています。`
+      : "";
+
+  return `# ${title}
+
+${opening}
+
+対象読者は「${audience}」です。この記事のゴールは「${goal}」です。
+
+副業が重くなる原因は、毎回ゼロから考えていることです。ネタを考える、構成を作る、本文を書く、サムネを考える、投稿文を作る。この流れを毎回手作業でやると、1本の記事に必要以上の時間がかかります。
+
+AIを使うなら、いきなり完成文を書かせるより、作業を分解して任せる方が安定します。まず「テーマ決め」「構成」「本文」「タイトル」「サムネ」「投稿前チェック」に分けます。このうち人間がやるべきなのは、方向性の決定と最終確認です。
+
+最初にAIへ頼むのは構成です。「初心者向けに、結論、理由、手順、注意点、まとめで構成して」と依頼します。構成があるだけで、書き始める前の迷いが消えます。迷う時間が減ると、作業時間はかなり短くなります。
+
+次に、毎回使う型を決めます。おすすめは「問題提起、結論、3つの手順、注意点、行動提案」です。型を固定すると、AIへの指示も安定します。投稿の品質もそろいやすくなります。
+
+本文を書いた後は、AIに修正を任せます。「読みやすく」「初心者向けに」「売り込み感を弱めて」と指示するだけで、編集時間を減らせます。完璧な文章を一発で作るより、AIと一緒に整える方が現実的です。
+
+サムネイルと告知文も同じ流れに入れます。本文ができたら、「この記事に合うサムネ文言を5つ」「X投稿用の短い紹介文を3つ」と依頼します。投稿後の発信まで一気に準備できます。
+
+AIで副業時間を半分にするコツは、全部を任せることではありません。自分は方向性と判断を担当し、AIには下書き、整理、言い換え、量産を任せることです。この分担ができると、副業は根性ではなく仕組みで続けられます。${paidBlock}${cta}`;
+}
+
+function makeThumbnailPrompt(title) {
+  return `note.com article thumbnail, 1280x670, simple yellow background, bold black Japanese text, exact text: "${title}", clean clock icon and small AI circuit symbol, no logo, no watermark, high readability on mobile`;
+}
+
+function makePublishText(title) {
+  const tags = tagList();
+  const paid = paidMode();
+  const price = Number(priceEl.value || 500);
+
+  return `note公開手順
+
+1. 「note新規投稿を開く」を押す
+2. タイトルに貼る: ${title}
+3. 本文タブの内容を本文欄に貼る
+4. サムネPNGを保存して、noteの見出し画像にアップロードする
+5. ハッシュタグを追加する: ${tags.map((tag) => `#${tag}`).join(" ")}
+6. 記事タイプを確認する: ${paid === "paid" ? `有料 ${price}円` : "無料"}
+7. プレビューで本文、改行、リンクを確認する
+8. 問題なければ「投稿する」を押す
+
+注意:
+HTML単体ではnoteに自動投稿できません。noteへの投稿操作はログイン済みブラウザ上で手動確認が必要です。`;
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+  const chars = text.split("");
+  let line = "";
+  const lines = [];
+  chars.forEach((char) => {
+    const next = line + char;
+    if (ctx.measureText(next).width > maxWidth && line) {
+      lines.push(line);
+      line = char;
+    } else {
+      line = next;
+    }
+  });
+  lines.push(line);
+  lines.slice(0, 4).forEach((item, index) => ctx.fillText(item, x, y + index * lineHeight));
+}
+
+function drawThumbnail(title) {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#ffd62e";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#111111";
+  ctx.beginPath();
+  ctx.arc(1050, 335, 150, 0, Math.PI * 2);
+  ctx.lineWidth = 16;
+  ctx.strokeStyle = "#111111";
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(1050, 335);
+  ctx.lineTo(1050, 240);
+  ctx.moveTo(1050, 335);
+  ctx.lineTo(1130, 385);
+  ctx.stroke();
+
+  ctx.fillStyle = "#111111";
+  ctx.font = "900 88px 'Yu Gothic', 'Meiryo', sans-serif";
+  ctx.textBaseline = "top";
+  wrapCanvasText(ctx, title, 86, 110, 760, 112);
+
+  ctx.font = "800 34px 'Yu Gothic', 'Meiryo', sans-serif";
+  ctx.fillText("AI副業ラボ", 88, 560);
+}
+
+function updateAffiliateCard() {
+  const enabled = affiliateEnabledEl.checked && affiliateUrlEl.value.trim();
+  affiliateCardEl.hidden = !enabled;
+  if (!enabled) return;
+  affiliateCardTitleEl.textContent = affiliateTitleEl.value.trim() || "おすすめAIツール";
+  affiliateCardLinkEl.href = affiliateUrlEl.value.trim();
+}
+
+function generate() {
+  const title = cleanTitle(themeEl.value);
   generatedTitleEl.textContent = title;
-  articleTextEl.value = article;
-  thumbnailPromptEl.value = prompt;
-  checklistTextEl.value = checklist;
+  articleTextEl.value = makeArticle();
+  thumbnailPromptEl.value = makeThumbnailPrompt(title);
+  publishTextEl.value = makePublishText(title);
+  drawThumbnail(title);
   updateAffiliateCard();
 
   localStorage.setItem(
-    "ai-sidejob-post-maker",
-    JSON.stringify({ theme, audience, goal, tone, price, paid, style, affiliate, article, prompt, checklist })
+    "ai-sidejob-note-tool",
+    JSON.stringify({
+      theme: themeEl.value,
+      audience: audienceEl.value,
+      goal: goalEl.value,
+      tone: toneEl.value,
+      length: lengthEl.value,
+      tags: tagsEl.value,
+      price: priceEl.value,
+      paid: paidMode(),
+      toolCta: toolCtaEnabledEl.checked,
+      toolUrl: toolUrlEl.value,
+      affiliateEnabled: affiliateEnabledEl.checked,
+      affiliateUrl: affiliateUrlEl.value,
+      affiliateTitle: affiliateTitleEl.value,
+    })
   );
 }
 
@@ -226,14 +210,21 @@ function downloadMarkdown() {
   URL.revokeObjectURL(url);
 }
 
+function downloadThumbnail() {
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = "note-thumbnail.png";
+  a.click();
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   generate();
 });
 
-[affiliateEnabledEl, affiliateUrlEl, affiliateTitleInputEl, affiliateDescriptionInputEl, affiliateButtonTextEl].forEach((el) => {
-  el.addEventListener("input", updateAffiliateCard);
-  el.addEventListener("change", updateAffiliateCard);
+document.querySelectorAll("input, textarea, select").forEach((el) => {
+  el.addEventListener("input", generate);
+  el.addEventListener("change", generate);
 });
 
 document.querySelectorAll(".tab").forEach((tab) => {
@@ -250,61 +241,53 @@ document.querySelectorAll(".copy-btn").forEach((button) => {
 });
 
 document.querySelector("#copyAllBtn").addEventListener("click", () => {
-  navigator.clipboard.writeText(
-    [articleTextEl.value, "---- サムネ生成プロンプト ----", thumbnailPromptEl.value, "---- 投稿チェック ----", checklistTextEl.value].join("\n\n")
-  );
+  navigator.clipboard.writeText([articleTextEl.value, thumbnailPromptEl.value, publishTextEl.value].join("\n\n---\n\n"));
 });
 
 document.querySelector("#downloadMdBtn").addEventListener("click", downloadMarkdown);
+document.querySelector("#downloadThumbBtn").addEventListener("click", downloadThumbnail);
 
 document.querySelector("#sampleBtn").addEventListener("click", () => {
-  themeEl.value = sample.theme;
+  themeEl.value = sample.title;
   audienceEl.value = sample.audience;
   goalEl.value = sample.goal;
-  styleEl.value = sample.style;
+  tagsEl.value = sample.tags;
   generate();
 });
 
 document.querySelector("#resetBtn").addEventListener("click", () => {
-  localStorage.removeItem("ai-sidejob-post-maker");
+  localStorage.removeItem("ai-sidejob-note-tool");
   form.reset();
-  themeEl.value = "";
+  themeEl.value = sample.title;
   audienceEl.value = sample.audience;
-  goalEl.value = "月5万円の収入導線を作る";
-  styleEl.value = sample.style;
+  goalEl.value = sample.goal;
+  tagsEl.value = sample.tags;
   priceEl.value = 500;
+  toolCtaEnabledEl.checked = true;
   affiliateEnabledEl.checked = false;
-  affiliateUrlEl.value = "";
-  affiliateTitleInputEl.value = "おすすめAIツール";
-  affiliateDescriptionInputEl.value = "AI副業の記事作成や作業効率化に役立つツールです。";
-  affiliateButtonTextEl.value = "詳しく見る";
   generate();
 });
 
-const saved = localStorage.getItem("ai-sidejob-post-maker");
+const saved = localStorage.getItem("ai-sidejob-note-tool");
 if (saved) {
   try {
     const data = JSON.parse(saved);
-    themeEl.value = data.theme || "";
+    themeEl.value = data.theme || sample.title;
     audienceEl.value = data.audience || sample.audience;
     goalEl.value = data.goal || sample.goal;
-    toneEl.value = data.tone || "friendly";
+    toneEl.value = data.tone || "practical";
+    lengthEl.value = data.length || "1000";
+    tagsEl.value = data.tags || sample.tags;
     priceEl.value = data.price || 500;
-    styleEl.value = data.style || sample.style;
-    document.querySelector(`input[name='paidMode'][value='${data.paid || "paid"}']`).checked = true;
-
-    if (data.affiliate) {
-      affiliateEnabledEl.checked = Boolean(data.affiliate.enabled);
-      affiliateUrlEl.value = data.affiliate.url || "";
-      affiliateTitleInputEl.value = data.affiliate.title || "おすすめAIツール";
-      affiliateDescriptionInputEl.value = data.affiliate.description || "AI副業の記事作成や作業効率化に役立つツールです。";
-      affiliateButtonTextEl.value = data.affiliate.buttonText || "詳しく見る";
-    }
+    document.querySelector(`input[name='paidMode'][value='${data.paid || "free"}']`).checked = true;
+    toolCtaEnabledEl.checked = data.toolCta !== false;
+    toolUrlEl.value = data.toolUrl || "";
+    affiliateEnabledEl.checked = Boolean(data.affiliateEnabled);
+    affiliateUrlEl.value = data.affiliateUrl || "";
+    affiliateTitleEl.value = data.affiliateTitle || "おすすめAIツール";
   } catch {
-    themeEl.value = sample.theme;
+    themeEl.value = sample.title;
   }
-} else {
-  themeEl.value = sample.theme;
 }
 
 generate();
