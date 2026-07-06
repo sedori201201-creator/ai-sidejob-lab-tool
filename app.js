@@ -19,6 +19,7 @@ const canvas = document.querySelector("#thumbnailCanvas");
 const affiliateCardEl = document.querySelector("#affiliateCard");
 const affiliateCardTitleEl = document.querySelector("#affiliateCardTitle");
 const affiliateCardLinkEl = document.querySelector("#affiliateCardLink");
+const openNoteLinkEl = document.querySelector("#openNoteLink");
 
 const sample = {
   title: "AIを使って副業時間を半分にする方法",
@@ -26,6 +27,53 @@ const sample = {
   goal: "AIを使った投稿作業の型を作る",
   tags: "副業,AI,時短",
 };
+
+const storageKeys = {
+  settings: "ai-sidejob-note-tool",
+  analytics: "ai-sidejob-note-tool-analytics-v1",
+  userId: "ai-sidejob-note-tool-user-id",
+};
+
+function getUserId() {
+  let userId = localStorage.getItem(storageKeys.userId);
+  if (!userId) {
+    userId = `user_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem(storageKeys.userId, userId);
+  }
+  return userId;
+}
+
+function readAnalytics() {
+  try {
+    return JSON.parse(localStorage.getItem(storageKeys.analytics) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function writeAnalytics(rows) {
+  localStorage.setItem(storageKeys.analytics, JSON.stringify(rows.slice(-1000)));
+}
+
+function trackEvent(eventName, extra = {}) {
+  const rows = readAnalytics();
+  rows.push({
+    id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}_${Math.random()}`,
+    userId: getUserId(),
+    eventName,
+    createdAt: new Date().toISOString(),
+    title: cleanTitle(themeEl.value),
+    audience: audienceEl.value.trim(),
+    goal: goalEl.value.trim(),
+    paidMode: paidMode(),
+    price: Number(priceEl.value || 0),
+    tags: tagList(),
+    device: window.innerWidth < 760 ? "mobile" : "desktop",
+    referrer: document.referrer || "direct",
+    ...extra,
+  });
+  writeAnalytics(rows);
+}
 
 function paidMode() {
   return document.querySelector("input[name='paidMode']:checked").value;
@@ -90,7 +138,7 @@ AIで副業時間を半分にするコツは、全部を任せることではあ
 }
 
 function makeThumbnailPrompt(title) {
-  return `note.com article thumbnail, 1280x670, simple yellow background, bold black Japanese text, exact text: "${title}", clean clock icon and small AI circuit symbol, no logo, no watermark, high readability on mobile`;
+  return `note.com article thumbnail, 1280x670, simple yellow background, bold black Japanese text, exact text: "${title}", clean symbol, no logo, no watermark, high readability on mobile`;
 }
 
 function makePublishText(title) {
@@ -135,25 +183,20 @@ function drawThumbnail(title) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#ffd62e";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "#111111";
+  ctx.strokeStyle = "#111111";
+  ctx.lineWidth = 16;
   ctx.beginPath();
   ctx.arc(1050, 335, 150, 0, Math.PI * 2);
-  ctx.lineWidth = 16;
-  ctx.strokeStyle = "#111111";
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(1050, 335);
-  ctx.lineTo(1050, 240);
-  ctx.moveTo(1050, 335);
+  ctx.moveTo(1050, 240);
+  ctx.lineTo(1050, 335);
   ctx.lineTo(1130, 385);
   ctx.stroke();
-
   ctx.fillStyle = "#111111";
   ctx.font = "900 88px 'Yu Gothic', 'Meiryo', sans-serif";
   ctx.textBaseline = "top";
   wrapCanvasText(ctx, title, 86, 110, 760, 112);
-
   ctx.font = "800 34px 'Yu Gothic', 'Meiryo', sans-serif";
   ctx.fillText("AI副業ラボ", 88, 560);
 }
@@ -166,17 +209,9 @@ function updateAffiliateCard() {
   affiliateCardLinkEl.href = affiliateUrlEl.value.trim();
 }
 
-function generate() {
-  const title = cleanTitle(themeEl.value);
-  generatedTitleEl.textContent = title;
-  articleTextEl.value = makeArticle();
-  thumbnailPromptEl.value = makeThumbnailPrompt(title);
-  publishTextEl.value = makePublishText(title);
-  drawThumbnail(title);
-  updateAffiliateCard();
-
+function saveSettings() {
   localStorage.setItem(
-    "ai-sidejob-note-tool",
+    storageKeys.settings,
     JSON.stringify({
       theme: themeEl.value,
       audience: audienceEl.value,
@@ -195,9 +230,22 @@ function generate() {
   );
 }
 
+function generate(track = false) {
+  const title = cleanTitle(themeEl.value);
+  generatedTitleEl.textContent = title;
+  articleTextEl.value = makeArticle();
+  thumbnailPromptEl.value = makeThumbnailPrompt(title);
+  publishTextEl.value = makePublishText(title);
+  drawThumbnail(title);
+  updateAffiliateCard();
+  saveSettings();
+  if (track) trackEvent("generate_post_pack", { articleLength: articleTextEl.value.length });
+}
+
 function copyText(id) {
   const el = document.querySelector(`#${id}`);
   navigator.clipboard.writeText(el.value);
+  trackEvent("copy", { target: id });
 }
 
 function downloadMarkdown() {
@@ -208,6 +256,7 @@ function downloadMarkdown() {
   a.download = "note-post.md";
   a.click();
   URL.revokeObjectURL(url);
+  trackEvent("download_markdown");
 }
 
 function downloadThumbnail() {
@@ -215,16 +264,17 @@ function downloadThumbnail() {
   a.href = canvas.toDataURL("image/png");
   a.download = "note-thumbnail.png";
   a.click();
+  trackEvent("download_thumbnail");
 }
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  generate();
+  generate(true);
 });
 
 document.querySelectorAll("input, textarea, select").forEach((el) => {
-  el.addEventListener("input", generate);
-  el.addEventListener("change", generate);
+  el.addEventListener("input", () => generate(false));
+  el.addEventListener("change", () => generate(false));
 });
 
 document.querySelectorAll(".tab").forEach((tab) => {
@@ -242,21 +292,24 @@ document.querySelectorAll(".copy-btn").forEach((button) => {
 
 document.querySelector("#copyAllBtn").addEventListener("click", () => {
   navigator.clipboard.writeText([articleTextEl.value, thumbnailPromptEl.value, publishTextEl.value].join("\n\n---\n\n"));
+  trackEvent("copy_all");
 });
 
 document.querySelector("#downloadMdBtn").addEventListener("click", downloadMarkdown);
 document.querySelector("#downloadThumbBtn").addEventListener("click", downloadThumbnail);
+openNoteLinkEl.addEventListener("click", () => trackEvent("open_note"));
 
 document.querySelector("#sampleBtn").addEventListener("click", () => {
   themeEl.value = sample.title;
   audienceEl.value = sample.audience;
   goalEl.value = sample.goal;
   tagsEl.value = sample.tags;
-  generate();
+  generate(false);
+  trackEvent("load_sample");
 });
 
 document.querySelector("#resetBtn").addEventListener("click", () => {
-  localStorage.removeItem("ai-sidejob-note-tool");
+  localStorage.removeItem(storageKeys.settings);
   form.reset();
   themeEl.value = sample.title;
   audienceEl.value = sample.audience;
@@ -264,11 +317,13 @@ document.querySelector("#resetBtn").addEventListener("click", () => {
   tagsEl.value = sample.tags;
   priceEl.value = 500;
   toolCtaEnabledEl.checked = true;
+  toolUrlEl.value = "https://sedori201201-creator.github.io/ai-sidejob-lab-tool/";
   affiliateEnabledEl.checked = false;
-  generate();
+  generate(false);
+  trackEvent("reset");
 });
 
-const saved = localStorage.getItem("ai-sidejob-note-tool");
+const saved = localStorage.getItem(storageKeys.settings);
 if (saved) {
   try {
     const data = JSON.parse(saved);
@@ -281,7 +336,7 @@ if (saved) {
     priceEl.value = data.price || 500;
     document.querySelector(`input[name='paidMode'][value='${data.paid || "free"}']`).checked = true;
     toolCtaEnabledEl.checked = data.toolCta !== false;
-    toolUrlEl.value = data.toolUrl || "";
+    toolUrlEl.value = data.toolUrl || "https://sedori201201-creator.github.io/ai-sidejob-lab-tool/";
     affiliateEnabledEl.checked = Boolean(data.affiliateEnabled);
     affiliateUrlEl.value = data.affiliateUrl || "";
     affiliateTitleEl.value = data.affiliateTitle || "おすすめAIツール";
@@ -290,4 +345,6 @@ if (saved) {
   }
 }
 
-generate();
+getUserId();
+trackEvent("page_view");
+generate(false);

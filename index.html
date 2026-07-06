@@ -14,10 +14,15 @@
           <h1>note投稿ツール</h1>
         </div>
         <div class="top-actions">
+          <a class="ghost-btn" href="admin.html">管理画面</a>
           <button id="sampleBtn" class="ghost-btn" type="button">サンプル</button>
           <button id="resetBtn" class="ghost-btn" type="button">リセット</button>
         </div>
       </header>
+
+      <p class="privacy-note">
+        改善のため、入力内容と操作状況をこのブラウザ内に匿名保存します。外部送信はしていません。
+      </p>
 
       <section class="tool-grid">
         <form id="postForm" class="panel input-panel">
@@ -86,7 +91,7 @@
             </label>
             <div class="field">
               <label for="toolUrl">WebツールURL</label>
-              <input id="toolUrl" type="url" placeholder="https://sedori201201-creator.github.io/ai-sidejob-lab-tool/">
+              <input id="toolUrl" type="url" value="https://sedori201201-creator.github.io/ai-sidejob-lab-tool/">
             </div>
           </section>
 
@@ -107,7 +112,7 @@
           </section>
 
           <button class="primary-btn" type="submit">投稿パックを作る</button>
-          <a class="note-link" href="https://note.com/notes/new" target="_blank" rel="noopener">note新規投稿を開く</a>
+          <a id="openNoteLink" class="note-link" href="https://note.com/notes/new" target="_blank" rel="noopener">note新規投稿を開く</a>
         </form>
 
         <section class="panel output-panel">

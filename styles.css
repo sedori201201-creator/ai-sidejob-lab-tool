@@ -308,6 +308,106 @@ canvas {
   border-top: 1px solid var(--line);
 }
 
+.privacy-note {
+  margin: -4px 0 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.danger {
+  color: #a32626;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metric-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.metric-card span,
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.metric-card strong {
+  font-size: 34px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-panel {
+  padding: 16px;
+}
+
+.list-table {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.list-table div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag-list span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #fff6c9;
+  border: 1px solid var(--line);
+  font-weight: 800;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th,
+td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #fbfaf4;
+}
+
 @media (max-width: 880px) {
   .tool-grid,
   .field-row,
@@ -322,5 +422,10 @@ canvas {
   .top-actions {
     flex-wrap: wrap;
     justify-content: flex-end;
+  }
+
+  .metrics-grid,
+  .admin-grid {
+    grid-template-columns: 1fr;
   }
 }
